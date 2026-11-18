@@ -1,0 +1,18 @@
+{
+  "name": "omnipost-creator-studio",
+  "version": "1.0.0",
+  "description": "All-in-One Social Media Cross-Poster dengan Meta Threads",
+  "scripts": {
+    "build": "echo 'Static web assets ready'",
+    "cap:setup": "npx cap add android && node scripts/configure-android.js && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/filesystem": "^6.0.1",
+    "@capacitor/share": "^6.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}
