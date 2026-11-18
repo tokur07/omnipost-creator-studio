@@ -36,8 +36,7 @@ const buildGradlePath = path.join(__dirname, '..', 'android', 'app', 'build.grad
 if (fs.existsSync(buildGradlePath)) {
   let gradle = fs.readFileSync(buildGradlePath, 'utf8');
 
-  const signingBlock = `
-    signingConfigs {
+  const signingBlock = `    signingConfigs {
         release {
             storeFile file("release-key.jks")
             storePassword System.getenv("KEYSTORE_PASSWORD") ?: "omnipost2026"
@@ -45,16 +44,17 @@ if (fs.existsSync(buildGradlePath)) {
             keyPassword System.getenv("KEY_PASSWORD") ?: "omnipost2026"
         }
     }
-`;
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release`;
 
   if (!gradle.includes('signingConfigs')) {
-    gradle = gradle.replace('buildTypes {', `${signingBlock}\n    buildTypes {`);
+    gradle = gradle.replace(
+      /buildTypes\s*\{\s*release\s*\{/,
+      signingBlock
+    );
   }
-
-  gradle = gradle.replace(
-    /release\s*\{/,
-    'release {\n            signingConfig signingConfigs.release'
-  );
 
   fs.writeFileSync(buildGradlePath, gradle, 'utf8');
   console.log('build.gradle berhasil dikonfigurasi untuk Release Signed APK.');
