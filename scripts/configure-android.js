@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// 1. Konfigurasi AndroidManifest.xml untuk izin Galeri & Internet
+// 1. Konfigurasi AndroidManifest.xml untuk izin Galeri, Internet & Package Visibility Sosmed
 const manifestPath = path.join(__dirname, '..', 'android', 'app', 'src', 'main', 'AndroidManifest.xml');
 if (fs.existsSync(manifestPath)) {
   let manifest = fs.readFileSync(manifestPath, 'utf8');
@@ -22,13 +22,32 @@ if (fs.existsSync(manifestPath)) {
     }
   });
 
-  manifest = manifest.replace(
-    '<application',
-    '<application android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true"'
-  );
+  if (!manifest.includes('android:usesCleartextTraffic')) {
+    manifest = manifest.replace(
+      '<application',
+      '<application android:usesCleartextTraffic="true" android:requestLegacyExternalStorage="true"'
+    );
+  }
+
+  const queriesBlock = `
+    <queries>
+        <package android:name="com.instagram.barcelona" />
+        <package android:name="com.instagram.android" />
+        <package android:name="com.zhiliaoapp.musically" />
+        <package android:name="com.ss.android.ugc.trill" />
+        <package android:name="com.twitter.android" />
+        <package android:name="com.google.android.youtube" />
+        <package android:name="com.facebook.katana" />
+        <package android:name="com.linkedin.android" />
+    </queries>
+`;
+
+  if (!manifest.includes('<queries>')) {
+    manifest = manifest.replace('</manifest>', `${queriesBlock}</manifest>`);
+  }
 
   fs.writeFileSync(manifestPath, manifest, 'utf8');
-  console.log('AndroidManifest.xml berhasil dikonfigurasi dengan izin media & galeri.');
+  console.log('AndroidManifest.xml berhasil dikonfigurasi.');
 }
 
 // 2. Konfigurasi Signing Release di android/app/build.gradle
@@ -50,12 +69,9 @@ if (fs.existsSync(buildGradlePath)) {
             signingConfig signingConfigs.release`;
 
   if (!gradle.includes('signingConfigs')) {
-    gradle = gradle.replace(
-      /buildTypes\s*\{\s*release\s*\{/,
-      signingBlock
-    );
+    gradle = gradle.replace(/buildTypes\s*\{\s*release\s*\{/, signingBlock);
   }
 
   fs.writeFileSync(buildGradlePath, gradle, 'utf8');
-  console.log('build.gradle berhasil dikonfigurasi untuk Release Signed APK.');
+  console.log('build.gradle berhasil dikonfigurasi.');
 }

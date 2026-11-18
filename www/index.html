@@ -4,431 +4,394 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <meta name="theme-color" content="#0F1117" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>OmniPost Creator Studio — 1-Klik Multi-Platform & Threads</title>
+  <title>OmniPost Creator Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            surface: {
-              950: '#090B10',
-              900: '#0F1117',
-              850: '#141821',
-              800: '#1A1F2C',
-              700: '#252C3D',
-            },
-            accent: {
-              500: '#6366F1',
-              600: '#4F46E5',
-              glow: '#818CF8'
-            }
-          }
-        }
-      }
-    }
-  </script>
   <style>
-    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-    body {
-      background-color: #0F1117;
-      color: #F1F5F9;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      overscroll-behavior-y: none;
-      padding-bottom: env(safe-area-inset-bottom);
+    :root {
+      --bg-950: #090B10;
+      --bg-900: #0F1117;
+      --bg-850: #141821;
+      --bg-800: #1A1F2C;
+      --border: #252C3D;
+      --indigo: #6366F1;
+      --emerald: #10B981;
     }
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #2A3244; border-radius: 999px; }
-    .safe-top { padding-top: max(12px, env(safe-area-inset-top)); }
-    .safe-bottom { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-900);
+      color: #F1F5F9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overscroll-behavior-y: none;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(76px + env(safe-area-inset-bottom));
+    }
+    /* Offline Fallback Styles (tetap rapi meski tanpa internet) */
+    .app-header {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(15, 17, 23, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #1E2536;
+      padding: calc(14px + env(safe-area-inset-top)) 16px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card {
+      background: var(--bg-850);
+      border: 1px solid #1E2536;
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .input-dark {
+      width: 100%;
+      background: var(--bg-900);
+      border: 1px solid #2A3346;
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: #F8FAFC;
+      font-size: 13px;
+      outline: none;
+    }
+    .input-dark:focus { border-color: var(--indigo); }
+    .btn-primary {
+      width: 100%;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(90deg, #4F46E5, #7C3AED, #DB2777);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      cursor: pointer;
+    }
+    .btn-primary:active { transform: scale(0.98); }
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 30;
+      background: rgba(15, 17, 23, 0.97);
+      border-top: 1px solid #1E2536;
+      padding: 6px 8px calc(8px + env(safe-area-inset-bottom));
+      display: grid; grid-template-columns: repeat(4, 1fr);
+    }
+    .nav-btn {
+      background: transparent; border: none;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 4px 0; cursor: pointer;
+    }
+    .hidden { display: none !important; }
     @keyframes slideUp {
       from { transform: translateY(100%); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
-    .animate-sheet { animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1); }
+    .animate-sheet { animation: slideUp 0.25s ease-out; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col bg-surface-900 text-slate-100 select-none">
+<body>
 
-  <!-- Android Top App Bar -->
-  <header class="sticky top-0 z-30 bg-surface-900/95 backdrop-blur-md border-b border-slate-800/80 safe-top px-4 pb-3 flex items-center justify-between">
-    <div class="flex items-center gap-2.5">
-      <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-        </svg>
+  <!-- Top App Bar -->
+  <header class="app-header">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#6366F1,#EC4899);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;">
+        ⚡
       </div>
       <div>
-        <div class="flex items-center gap-1.5">
-          <h1 class="text-base font-bold tracking-tight text-white">OmniPost Studio</h1>
-          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">7 Kanal</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:15px;font-weight:700;color:#fff;">OmniPost Studio</span>
+          <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:99px;background:rgba(16,185,129,0.15);color:#34D399;border:1px solid rgba(16,185,129,0.3);">7 Kanal</span>
         </div>
-        <p class="text-[11px] text-slate-400">1-Klik Cross-Poster &amp; Threads</p>
+        <div style="font-size:11px;color:#94A3B8;">1-Klik Cross-Poster &amp; Threads</div>
       </div>
     </div>
 
-    <div class="flex items-center gap-2">
-      <button onclick="openPreviewSheet()" class="px-3 py-1.5 rounded-xl bg-surface-800 hover:bg-surface-700 border border-slate-700/80 text-xs font-medium text-slate-200 flex items-center gap-1.5 active:scale-95 transition">
-        <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-        </svg>
-        Preview
-      </button>
-    </div>
+    <button onclick="openPreviewSheet()" style="padding:7px 12px;border-radius:10px;background:#1A1F2C;border:1px solid #2D364A;color:#E2E8F0;font-size:12px;font-weight:600;cursor:pointer;">
+      👁️ Preview
+    </button>
   </header>
 
-  <!-- Main Content Container -->
-  <main class="flex-1 max-w-6xl w-full mx-auto px-4 pt-4 pb-24">
+  <!-- Main Content -->
+  <main style="flex:1;max-width:960px;width:100%;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:16px;">
 
     <!-- TAB 1: BUAT POSTINGAN -->
-    <section id="tab-create" class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-      <!-- Editor Column -->
-      <div class="lg:col-span-7 space-y-4">
+    <section id="tab-create" style="display:flex;flex-direction:column;gap:14px;">
 
-        <!-- Target Platform Selector -->
-        <div class="bg-surface-850 border border-slate-800 rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Target Publikasi (1-Klik)</h2>
-              <p class="text-[11px] text-slate-500 mt-0.5"><span id="activeCount">7</span> dari 7 saluran dipilih</p>
-            </div>
-            <button onclick="toggleAllPlatforms()" class="text-xs font-medium text-indigo-400 hover:text-indigo-300">Pilih Semua</button>
+      <!-- Target Platform -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#94A3B8;">Target Publikasi (1-Klik)</div>
+            <div style="font-size:11px;color:#64748B;margin-top:2px;"><span id="activeCount">7</span> dari 7 saluran dipilih</div>
           </div>
-          <div id="platformChips" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+          <button onclick="toggleAllPlatforms()" style="background:none;border:none;color:#818CF8;font-size:12px;font-weight:600;cursor:pointer;">Pilih Semua</button>
         </div>
+        <div id="platformChips" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;"></div>
+      </div>
 
-        <!-- Media Upload / Galeri Android -->
-        <div class="bg-surface-850 border border-slate-800 rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-3">
-            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Media Konten (Foto / Video)</h2>
-            <div class="flex gap-1.5">
-              <button onclick="setAspectRatio('9:16')" id="btn-ratio-916" class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-indigo-600 text-white">9:16 Reels/Threads</button>
-              <button onclick="setAspectRatio('4:5')" id="btn-ratio-45" class="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-surface-800 text-slate-400">4:5 Feed</button>
-            </div>
-          </div>
-
-          <input type="file" id="mediaInput" accept="image/*,video/*" class="hidden" onchange="handleMediaUpload(event)" />
-
-          <div id="mediaDropzone" onclick="document.getElementById('mediaInput').click()" class="border-2 border-dashed border-slate-700 hover:border-indigo-500/70 rounded-xl p-5 text-center cursor-pointer transition bg-surface-900/50">
-            <div id="mediaEmptyState" class="space-y-2">
-              <div class="w-11 h-11 rounded-full bg-indigo-500/15 text-indigo-400 mx-auto flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-              </div>
-              <p class="text-sm font-medium text-slate-200">Pilih dari Galeri HP Android atau Simulasi</p>
-              <p class="text-xs text-slate-500">Mendukung JPG, PNG, MP4, MOV hingga 100MB</p>
-              <div class="pt-1 flex justify-center gap-2" onclick="event.stopPropagation()">
-                <button onclick="useSampleMedia('video')" class="px-3 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 text-xs text-slate-300 border border-slate-700">Pakai Sample Video</button>
-                <button onclick="useSampleMedia('image')" class="px-3 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 text-xs text-slate-300 border border-slate-700">Pakai Sample Foto</button>
-              </div>
-            </div>
-
-            <div id="mediaPreviewBox" class="hidden relative">
-              <div id="mediaRenderArea" class="rounded-xl overflow-hidden bg-black max-h-64 flex items-center justify-center mx-auto"></div>
-              <div class="mt-2.5 flex items-center justify-between text-xs">
-                <span id="mediaFileName" class="text-slate-300 truncate max-w-[200px]">media_konten.mp4</span>
-                <button onclick="event.stopPropagation(); clearMedia()" class="text-rose-400 hover:text-rose-300 font-medium">Hapus Media</button>
-              </div>
-            </div>
+      <!-- Media Galeri Android -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:#94A3B8;">Media Galeri HP</span>
+          <div style="display:flex;gap:6px;">
+            <button onclick="setAspectRatio('9:16')" id="btn-ratio-916" style="padding:4px 10px;border-radius:8px;border:none;font-size:11px;font-weight:600;background:#4F46E5;color:#fff;cursor:pointer;">9:16</button>
+            <button onclick="setAspectRatio('4:5')" id="btn-ratio-45" style="padding:4px 10px;border-radius:8px;border:none;font-size:11px;font-weight:600;background:#1A1F2C;color:#94A3B8;cursor:pointer;">4:5</button>
           </div>
         </div>
 
-        <!-- Master Caption & AI Polisher -->
-        <div class="bg-surface-850 border border-slate-800 rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Master Caption &amp; Utas</h2>
-            <div class="flex items-center gap-1.5">
-              <button onclick="polishCaptionAI()" class="px-2.5 py-1 rounded-lg bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 text-xs font-medium flex items-center gap-1 active:scale-95 transition">
-                <span>✨ Poles Caption</span>
-              </button>
-              <button onclick="appendHashtags()" class="px-2.5 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-300 text-xs font-medium active:scale-95 transition">
-                + Hashtag
-              </button>
+        <input type="file" id="mediaInput" accept="image/*,video/*" class="hidden" onchange="handleMediaUpload(event)" />
+
+        <div onclick="document.getElementById('mediaInput').click()" style="border:2px dashed #2D364A;border-radius:14px;padding:18px;text-align:center;background:#0F1117;cursor:pointer;">
+          <div id="mediaEmptyState">
+            <div style="font-size:24px;margin-bottom:6px;">🖼️</div>
+            <div style="font-size:13px;font-weight:600;color:#E2E8F0;">Ketuk untuk Buka Galeri HP Android</div>
+            <div style="font-size:11px;color:#64748B;margin-top:3px;">Foto (JPG/PNG) atau Video (MP4/MOV)</div>
+            <div style="margin-top:10px;display:flex;justify-content:center;gap:8px;" onclick="event.stopPropagation()">
+              <button onclick="useSampleMedia('video')" style="padding:6px 10px;border-radius:8px;background:#1A1F2C;border:1px solid #2D364A;color:#CBD5E1;font-size:11px;cursor:pointer;">Sample Video</button>
+              <button onclick="useSampleMedia('image')" style="padding:6px 10px;border-radius:8px;background:#1A1F2C;border:1px solid #2D364A;color:#CBD5E1;font-size:11px;cursor:pointer;">Sample Foto</button>
             </div>
           </div>
 
-          <textarea id="masterCaption" rows="4" oninput="syncAllPreviews()" placeholder="Tulis satu caption utama di sini... Otomatis disesuaikan untuk Threads (500 kar), X (280 kar), IG, TikTok, Shorts, FB & LinkedIn."
-            class="w-full bg-surface-900 border border-slate-700/80 focus:border-indigo-500 rounded-xl p-3.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none leading-relaxed">Rahasia workflow kreator konten 2026: rekam sekali, edit seperlunya, lalu distribusi otomatis ke 7 platform sekaligus dalam hitungan detik! 🚀
+          <div id="mediaPreviewBox" class="hidden">
+            <div id="mediaRenderArea" style="border-radius:12px;overflow:hidden;background:#000;max-height:220px;display:flex;align-items:center;justify-content:center;"></div>
+            <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;font-size:12px;">
+              <span id="mediaFileName" style="color:#CBD5E1;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">media.mp4</span>
+              <button onclick="event.stopPropagation(); clearMedia()" style="background:none;border:none;color:#FB7185;font-weight:600;cursor:pointer;">Hapus</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Master Caption & Meta Threads -->
+      <div class="card" style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:#94A3B8;">Master Caption</span>
+          <div style="display:flex;gap:6px;">
+            <button onclick="polishCaptionAI()" style="padding:5px 10px;border-radius:8px;background:rgba(168,85,247,0.16);border:1px solid rgba(168,85,247,0.35);color:#D8B4FE;font-size:11px;font-weight:600;cursor:pointer;">✨ Poles</button>
+            <button onclick="appendHashtags()" style="padding:5px 10px;border-radius:8px;background:rgba(99,102,241,0.16);border:1px solid rgba(99,102,241,0.35);color:#A5B4FC;font-size:11px;font-weight:600;cursor:pointer;">+ Hashtag</button>
+          </div>
+        </div>
+
+        <textarea id="masterCaption" rows="4" oninput="syncAllPreviews()" class="input-dark" style="line-height:1.5;resize:vertical;">Rahasia workflow kreator konten 2026: rekam sekali, lalu distribusi otomatis ke 7 platform sekaligus dalam hitungan detik! 🚀
 
 Dari Reels, TikTok, Shorts, sampai diskusi hangat di Threads — semua sinkron tanpa perlu copy-paste berulang kali. Setuju atau tim upload manual?</textarea>
 
-          <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
-            <span>Total Karakter: <strong id="charCounter" class="text-slate-200">0</strong></span>
-            <div class="flex items-center gap-3">
-              <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                <input type="checkbox" id="autoSplitThreads" checked onchange="syncAllPreviews()" class="rounded bg-surface-900 border-slate-600 text-indigo-500 focus:ring-0" />
-                <span class="text-slate-300">Auto-Split Utas Threads (🧵)</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Pengaturan Spesifik Meta Threads -->
-          <div class="pt-3 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label class="block text-[11px] font-medium text-slate-400 mb-1">Threads Topic Tag</label>
-              <input type="text" id="threadsTopic" value="CreatorEconomy" oninput="syncAllPreviews()" placeholder="Contoh: TechIndonesia"
-                class="w-full bg-surface-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:border-indigo-500 focus:outline-none" />
-            </div>
-            <div>
-              <label class="block text-[11px] font-medium text-slate-400 mb-1">Kontrol Balasan Threads</label>
-              <select id="threadsReplyControl" onchange="syncAllPreviews()"
-                class="w-full bg-surface-900 border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-slate-200 focus:border-indigo-500 focus:outline-none">
-                <option value="everyone">Siapa saja dapat membalas</option>
-                <option value="accounts_you_follow">Profil yang Anda ikuti</option>
-                <option value="mentioned_only">Hanya profil yang disebut</option>
-              </select>
-            </div>
-          </div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:#94A3B8;">
+          <span>Karakter: <strong id="charCounter" style="color:#fff;">0</strong></span>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:#CBD5E1;">
+            <input type="checkbox" id="autoSplitThreads" checked onchange="syncAllPreviews()" />
+            <span>Auto-Split Utas Threads (🧵)</span>
+          </label>
         </div>
 
-        <!-- Penjadwalan & Tombol Publikasi 1-Klik -->
-        <div class="bg-surface-850 border border-slate-800 rounded-2xl p-4 space-y-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Waktu Tayang</span>
-            <div class="flex bg-surface-900 p-1 rounded-xl border border-slate-800">
-              <button onclick="setScheduleMode('now')" id="sched-now" class="px-3 py-1 rounded-lg text-xs font-medium bg-indigo-600 text-white">Posting Sekarang</button>
-              <button onclick="setScheduleMode('later')" id="sched-later" class="px-3 py-1 rounded-lg text-xs font-medium text-slate-400">Jadwalkan</button>
-            </div>
+        <div style="border-top:1px solid #1E2536;padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div>
+            <label style="display:block;font-size:11px;color:#94A3B8;margin-bottom:4px;">Threads Topic Tag</label>
+            <input type="text" id="threadsTopic" value="CreatorEconomy" oninput="syncAllPreviews()" class="input-dark" />
           </div>
-
-          <div id="schedulePicker" class="hidden grid grid-cols-2 gap-2 pt-1">
-            <input type="date" id="schedDate" class="bg-surface-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200" />
-            <input type="time" id="schedTime" value="19:00" class="bg-surface-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200" />
+          <div>
+            <label style="display:block;font-size:11px;color:#94A3B8;margin-bottom:4px;">Balasan Threads</label>
+            <select id="threadsReplyControl" onchange="syncAllPreviews()" class="input-dark">
+              <option value="everyone">Siapa saja</option>
+              <option value="accounts_you_follow">Yang diikuti</option>
+              <option value="mentioned_only">Hanya disebut</option>
+            </select>
           </div>
-
-          <button onclick="startCrossPost()" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-[0.99] transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-            </svg>
-            <span id="publishBtnText">Publikasikan ke 7 Platform Sekarang</span>
-          </button>
         </div>
       </div>
 
-      <!-- Desktop Live Preview Column -->
-      <div class="hidden lg:block lg:col-span-5">
-        <div class="sticky top-20 bg-surface-850 border border-slate-800 rounded-2xl p-4">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Live Mobile Preview</h3>
-            <span class="text-[11px] text-indigo-400 font-medium">Real-time Sync</span>
+      <!-- Jadwal & Tombol Publikasi -->
+      <div class="card" style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:#94A3B8;">Waktu Tayang</span>
+          <div style="display:flex;background:#0F1117;padding:3px;border-radius:10px;border:1px solid #1E2536;">
+            <button onclick="setScheduleMode('now')" id="sched-now" style="padding:5px 10px;border-radius:8px;border:none;font-size:11px;font-weight:600;background:#4F46E5;color:#fff;cursor:pointer;">Sekarang</button>
+            <button onclick="setScheduleMode('later')" id="sched-later" style="padding:5px 10px;border-radius:8px;border:none;font-size:11px;font-weight:600;background:transparent;color:#94A3B8;cursor:pointer;">Jadwalkan</button>
           </div>
-          <div id="desktopPreviewTabs" class="flex gap-1.5 overflow-x-auto pb-2 mb-3"></div>
-          <div id="desktopPreviewContainer" class="bg-surface-950 border border-slate-800 rounded-2xl p-3.5 max-h-[560px] overflow-y-auto"></div>
         </div>
+
+        <div id="schedulePicker" class="hidden" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <input type="date" id="schedDate" class="input-dark" />
+          <input type="time" id="schedTime" value="19:00" class="input-dark" />
+        </div>
+
+        <button onclick="startCrossPost()" class="btn-primary">
+          <span>🚀</span>
+          <span id="publishBtnText">Publikasikan ke 7 Platform Sekarang</span>
+        </button>
+
+        <button onclick="shareNativeAndroid('threads')" style="width:100%;padding:11px;border-radius:12px;background:#1A1F2C;border:1px solid #2D364A;color:#E2E8F0;font-size:12px;font-weight:600;cursor:pointer;">
+          📲 Bagikan Langsung via Android Share Sheet (Foto/Video + Caption)
+        </button>
       </div>
     </section>
 
-    <!-- TAB 2: RIWAYAT POSTINGAN -->
-    <section id="tab-history" class="hidden space-y-4">
-      <div class="flex items-center justify-between">
+    <!-- TAB 2: RIWAYAT -->
+    <section id="tab-history" class="hidden" style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
         <div>
-          <h2 class="text-lg font-bold text-white">Riwayat Distribusi</h2>
-          <p class="text-xs text-slate-400">Status sinkronisasi API lintas platform</p>
+          <h2 style="margin:0;font-size:17px;font-weight:700;color:#fff;">Riwayat Distribusi</h2>
+          <p style="margin:2px 0 0;font-size:12px;color:#94A3B8;">Tersimpan otomatis di penyimpanan aplikasi</p>
         </div>
-        <span id="totalPostsBadge" class="px-3 py-1 rounded-full bg-indigo-500/15 text-indigo-300 text-xs font-semibold">2 Postingan</span>
+        <span id="totalPostsBadge" style="padding:4px 10px;border-radius:99px;background:rgba(99,102,241,0.16);color:#A5B4FC;font-size:11px;font-weight:700;">0 Post</span>
       </div>
-      <div id="historyList" class="space-y-3"></div>
+      <div id="historyList" style="display:flex;flex-direction:column;gap:10px;"></div>
     </section>
 
     <!-- TAB 3: ANALITIK -->
-    <section id="tab-analytics" class="hidden space-y-4">
+    <section id="tab-analytics" class="hidden" style="display:flex;flex-direction:column;gap:12px;">
       <div>
-        <h2 class="text-lg font-bold text-white">Analitik Lintas Kanal</h2>
-        <p class="text-xs text-slate-400">Performa gabungan 7 media sosial termasuk Threads</p>
+        <h2 style="margin:0;font-size:17px;font-weight:700;color:#fff;">Analitik Lintas Kanal</h2>
+        <p style="margin:2px 0 0;font-size:12px;color:#94A3B8;">Performa gabungan 7 media sosial termasuk Threads</p>
       </div>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div class="bg-surface-850 border border-slate-800 rounded-2xl p-3.5">
-          <p class="text-[11px] text-slate-400">Total Tayangan</p>
-          <p class="text-xl font-bold text-white mt-1">148.2K</p>
-          <span class="text-[11px] text-emerald-400">+24.8% minggu ini</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="card">
+          <div style="font-size:11px;color:#94A3B8;">Total Tayangan</div>
+          <div style="font-size:20px;font-weight:800;color:#fff;margin-top:4px;">148.2K</div>
+          <div style="font-size:11px;color:#34D399;margin-top:2px;">+24.8% minggu ini</div>
         </div>
-        <div class="bg-surface-850 border border-slate-800 rounded-2xl p-3.5">
-          <p class="text-[11px] text-slate-400">Interaksi Threads</p>
-          <p class="text-xl font-bold text-white mt-1">19.4K</p>
-          <span class="text-[11px] text-emerald-400">412 balasan utas</span>
-        </div>
-        <div class="bg-surface-850 border border-slate-800 rounded-2xl p-3.5">
-          <p class="text-[11px] text-slate-400">Waktu Hemat</p>
-          <p class="text-xl font-bold text-indigo-400 mt-1">6.5 Jam</p>
-          <span class="text-[11px] text-slate-400">1-klik multi-upload</span>
-        </div>
-        <div class="bg-surface-850 border border-slate-800 rounded-2xl p-3.5">
-          <p class="text-[11px] text-slate-400">Tingkat Sukses API</p>
-          <p class="text-xl font-bold text-emerald-400 mt-1">99.4%</p>
-          <span class="text-[11px] text-slate-400">7 endpoint aktif</span>
+        <div class="card">
+          <div style="font-size:11px;color:#94A3B8;">Interaksi Threads</div>
+          <div style="font-size:20px;font-weight:800;color:#fff;margin-top:4px;">19.4K</div>
+          <div style="font-size:11px;color:#34D399;margin-top:2px;">412 balasan utas</div>
         </div>
       </div>
-      <div id="platformStatsBreakdown" class="bg-surface-850 border border-slate-800 rounded-2xl p-4 space-y-3"></div>
+      <div id="platformStatsBreakdown" class="card" style="display:flex;flex-direction:column;gap:10px;"></div>
     </section>
 
-    <!-- TAB 4: AKUN & BUILD APK -->
-    <section id="tab-accounts" class="hidden space-y-4">
-      <div class="bg-gradient-to-br from-indigo-900/40 via-surface-850 to-purple-900/30 border border-indigo-500/30 rounded-2xl p-4 space-y-3">
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300">Android Native Ready</span>
-            <h2 class="text-base font-bold text-white mt-1.5">OmniPost Studio APK (Capacitor)</h2>
-            <p class="text-xs text-slate-300 mt-1 leading-relaxed">Aplikasi ini dikonfigurasi untuk dikompilasi otomatis menjadi file <strong>.apk</strong> melalui GitHub Actions lengkap dengan izin akses galeri Android.</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-          <div class="bg-surface-900/80 border border-slate-800 rounded-xl p-3">
-            <p class="text-slate-400">Package ID</p>
-            <p class="font-mono text-slate-200 mt-0.5">id.omnipost.creatorstudio</p>
-          </div>
-          <div class="bg-surface-900/80 border border-slate-800 rounded-xl p-3">
-            <p class="text-slate-400">Integrasi Aktif</p>
-            <p class="font-semibold text-emerald-400 mt-0.5">Threads API + 6 Kanal Utama</p>
-          </div>
-        </div>
+    <!-- TAB 4: AKUN & KONEKSI -->
+    <section id="tab-accounts" class="hidden" style="display:flex;flex-direction:column;gap:12px;">
+      <div class="card" style="background:linear-gradient(135deg,rgba(79,70,229,0.22),#141821);">
+        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(99,102,241,0.25);color:#C7D2FE;">ANDROID NATIVE v1.1</span>
+        <h2 style="margin:8px 0 4px;font-size:16px;font-weight:700;color:#fff;">OmniPost Creator Studio</h2>
+        <p style="margin:0;font-size:12px;color:#CBD5E1;line-height:1.5;">Aktifkan atau nonaktifkan target media sosial, lalu gunakan tombol <strong>Salin</strong> atau <strong>Bagikan ke App</strong> untuk posting langsung ke aplikasi Threads, IG, TikTok, maupun X di HP Anda.</p>
       </div>
 
-      <div class="bg-surface-850 border border-slate-800 rounded-2xl p-4 space-y-3">
-        <h3 class="text-sm font-bold text-white">Koneksi Akun Media Sosial (OAuth 2.0)</h3>
-        <div id="accountConnectionsList" class="divide-y divide-slate-800"></div>
+      <div class="card">
+        <h3 style="margin:0 0 8px;font-size:14px;font-weight:700;color:#fff;">Pengaturan Akun Terhubung</h3>
+        <div id="accountConnectionsList"></div>
       </div>
     </section>
   </main>
 
-  <!-- Android Bottom Navigation Bar -->
-  <nav class="fixed bottom-0 inset-x-0 z-30 bg-surface-900/95 backdrop-blur-lg border-t border-slate-800 safe-bottom">
-    <div class="max-w-lg mx-auto grid grid-cols-4 px-2 py-1.5">
-      <button onclick="switchTab('create')" id="nav-create" class="nav-btn flex flex-col items-center py-1.5 text-indigo-400">
-        <div class="nav-pill px-4 py-1 rounded-full bg-indigo-500/20 mb-0.5">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-          </svg>
-        </div>
-        <span class="text-[11px] font-semibold">Buat</span>
-      </button>
-
-      <button onclick="switchTab('history')" id="nav-history" class="nav-btn flex flex-col items-center py-1.5 text-slate-400">
-        <div class="nav-pill px-4 py-1 rounded-full mb-0.5">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-        </div>
-        <span class="text-[11px] font-medium">Riwayat</span>
-      </button>
-
-      <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn flex flex-col items-center py-1.5 text-slate-400">
-        <div class="nav-pill px-4 py-1 rounded-full mb-0.5">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-          </svg>
-        </div>
-        <span class="text-[11px] font-medium">Analitik</span>
-      </button>
-
-      <button onclick="switchTab('accounts')" id="nav-accounts" class="nav-btn flex flex-col items-center py-1.5 text-slate-400">
-        <div class="nav-pill px-4 py-1 rounded-full mb-0.5">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-          </svg>
-        </div>
-        <span class="text-[11px] font-medium">Akun &amp; APK</span>
-      </button>
-    </div>
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button onclick="switchTab('create')" id="nav-create" class="nav-btn" style="color:#818CF8;">
+      <span class="nav-pill" style="padding:3px 14px;border-radius:99px;background:rgba(99,102,241,0.2);font-size:16px;">➕</span>
+      <span style="font-size:11px;font-weight:700;margin-top:2px;">Buat</span>
+    </button>
+    <button onclick="switchTab('history')" id="nav-history" class="nav-btn" style="color:#94A3B8;">
+      <span class="nav-pill" style="padding:3px 14px;border-radius:99px;font-size:16px;">🕒</span>
+      <span style="font-size:11px;font-weight:600;margin-top:2px;">Riwayat</span>
+    </button>
+    <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-btn" style="color:#94A3B8;">
+      <span class="nav-pill" style="padding:3px 14px;border-radius:99px;font-size:16px;">📊</span>
+      <span style="font-size:11px;font-weight:600;margin-top:2px;">Analitik</span>
+    </button>
+    <button onclick="switchTab('accounts')" id="nav-accounts" class="nav-btn" style="color:#94A3B8;">
+      <span class="nav-pill" style="padding:3px 14px;border-radius:99px;font-size:16px;">⚙️</span>
+      <span style="font-size:11px;font-weight:600;margin-top:2px;">Akun</span>
+    </button>
   </nav>
 
-  <!-- Mobile Preview Bottom Sheet -->
-  <div id="previewSheetModal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end justify-center" onclick="closePreviewSheet()">
-    <div class="bg-surface-900 border-t border-slate-700 w-full max-w-lg rounded-t-3xl p-4 pb-8 max-h-[88vh] flex flex-col animate-sheet" onclick="event.stopPropagation()">
-      <div class="w-10 h-1 bg-slate-700 rounded-full mx-auto mb-3"></div>
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-bold text-white">Pratinjau Tampilan Aplikasi</h3>
-        <button onclick="closePreviewSheet()" class="text-xs text-slate-400 hover:text-white px-2 py-1">Tutup</button>
+  <!-- Preview Bottom Sheet -->
+  <div id="previewSheetModal" class="hidden" style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.78);display:flex;align-items:flex-end;justify-content:center;" onclick="closePreviewSheet()">
+    <div class="animate-sheet" style="background:#0F1117;border-top:1px solid #2D364A;width:100%;max-width:520px;border-radius:24px 24px 0 0;padding:16px 16px 28px;max-height:88vh;display:flex;flex-direction:column;" onclick="event.stopPropagation()">
+      <div style="width:40px;height:4px;background:#334155;border-radius:99px;margin:0 auto 12px;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <strong style="font-size:14px;color:#fff;">Pratinjau &amp; Posting ke App</strong>
+        <button onclick="closePreviewSheet()" style="background:none;border:none;color:#94A3B8;font-size:12px;cursor:pointer;">Tutup ✕</button>
       </div>
-      <div id="mobilePreviewTabs" class="flex gap-1.5 overflow-x-auto pb-2 mb-3"></div>
-      <div id="mobilePreviewContainer" class="flex-1 overflow-y-auto bg-surface-950 border border-slate-800 rounded-2xl p-3.5"></div>
+      <div id="mobilePreviewTabs" style="display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;"></div>
+      <div id="mobilePreviewContainer" style="flex:1;overflow-y:auto;background:#090B10;border:1px solid #1E2536;border-radius:16px;padding:14px;"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+        <button onclick="copyPlatformCaption(selectedPreviewPlatform)" style="padding:10px;border-radius:12px;background:#1A1F2C;border:1px solid #2D364A;color:#fff;font-size:12px;font-weight:600;cursor:pointer;">
+          📋 Salin Caption
+        </button>
+        <button onclick="shareNativeAndroid(selectedPreviewPlatform)" style="padding:10px;border-radius:12px;background:#4F46E5;border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;">
+          📲 Kirim ke App
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- Publish Progress Bottom Sheet -->
-  <div id="publishModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="bg-surface-900 border border-slate-700 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 animate-sheet">
-      <div class="flex items-center justify-between">
+  <!-- Publish Progress Modal -->
+  <div id="publishModal" class="hidden" style="position:fixed;inset:0;z-index:50;background:rgba(0,0,0,0.82);display:flex;align-items:flex-end;justify-content:center;">
+    <div class="animate-sheet" style="background:#0F1117;border-top:1px solid #2D364A;width:100%;max-width:480px;border-radius:24px 24px 0 0;padding:20px 18px 28px;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
         <div>
-          <h3 class="text-base font-bold text-white" id="publishModalTitle">Mengirim ke 7 Platform...</h3>
-          <p class="text-xs text-slate-400" id="publishModalSubtitle">Sinkronisasi token OAuth &amp; unggah media</p>
+          <div id="publishModalTitle" style="font-size:15px;font-weight:700;color:#fff;">Menyiapkan Publikasi...</div>
+          <div id="publishModalSubtitle" style="font-size:11px;color:#94A3B8;">Menyesuaikan format caption &amp; utas</div>
         </div>
-        <span id="publishPercent" class="text-sm font-bold text-indigo-400">0%</span>
+        <span id="publishPercent" style="font-size:14px;font-weight:800;color:#818CF8;">0%</span>
       </div>
-      <div class="w-full h-2 bg-surface-800 rounded-full overflow-hidden">
-        <div id="publishProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-pink-500 transition-all duration-300" style="width: 0%"></div>
+      <div style="width:100%;height:8px;background:#1A1F2C;border-radius:99px;overflow:hidden;">
+        <div id="publishProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#6366F1,#EC4899);transition:width 0.3s;"></div>
       </div>
-      <div id="publishStepsList" class="space-y-2 max-h-64 overflow-y-auto"></div>
-      <button id="closePublishModalBtn" onclick="closePublishModal()" class="hidden w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold">
-        Selesai &amp; Lihat Riwayat
+      <div id="publishStepsList" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;"></div>
+      <button id="closePublishModalBtn" onclick="closePublishModal()" class="hidden btn-primary" style="padding:12px;">
+        Selesai &amp; Buka Riwayat
       </button>
     </div>
   </div>
 
   <!-- Android Snackbar -->
-  <div id="snackbar" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-800 border border-slate-700 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-xl"></div>
+  <div id="snackbar" class="hidden" style="position:fixed;bottom:84px;left:50%;transform:translateX(-50%);z-index:60;background:#1E293B;border:1px solid #334155;color:#fff;font-size:12px;font-weight:600;padding:10px 16px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.5);white-space:nowrap;"></div>
 
   <script>
-    const PLATFORMS = [
-      { id: 'threads', name: 'Threads', handle: '@creator.studio', limit: 500, badge: 'NEW', color: 'bg-white text-black', active: true, views: '28.4K' },
-      { id: 'instagram', name: 'Instagram', handle: '@creator.studio', limit: 2200, badge: 'Reels', color: 'bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 text-white', active: true, views: '46.1K' },
-      { id: 'tiktok', name: 'TikTok', handle: '@creatorstudio.id', limit: 2200, badge: 'FYP', color: 'bg-cyan-500 text-black', active: true, views: '39.8K' },
-      { id: 'youtube', name: 'YT Shorts', handle: 'Creator Studio ID', limit: 100, badge: 'Shorts', color: 'bg-red-600 text-white', active: true, views: '18.2K' },
-      { id: 'x', name: 'X (Twitter)', handle: '@creator_id', limit: 280, badge: 'Post', color: 'bg-slate-200 text-black', active: true, views: '7.9K' },
-      { id: 'facebook', name: 'Facebook', handle: 'Creator Studio Page', limit: 5000, badge: 'Reels', color: 'bg-blue-600 text-white', active: true, views: '5.1K' },
-      { id: 'linkedin', name: 'LinkedIn', handle: 'Creator Studio', limit: 3000, badge: 'Pro', color: 'bg-sky-700 text-white', active: true, views: '2.7K' }
+    const DEFAULT_PLATFORMS = [
+      { id: 'threads', name: 'Threads', handle: '@creator.studio', limit: 500, badge: 'NEW', active: true, views: '28.4K' },
+      { id: 'instagram', name: 'Instagram', handle: '@creator.studio', limit: 2200, badge: 'Reels', active: true, views: '46.1K' },
+      { id: 'tiktok', name: 'TikTok', handle: '@creatorstudio.id', limit: 2200, badge: 'FYP', active: true, views: '39.8K' },
+      { id: 'youtube', name: 'YT Shorts', handle: 'Creator Studio ID', limit: 100, badge: 'Shorts', active: true, views: '18.2K' },
+      { id: 'x', name: 'X (Twitter)', handle: '@creator_id', limit: 280, badge: 'Post', active: true, views: '7.9K' },
+      { id: 'facebook', name: 'Facebook', handle: 'Creator Studio Page', limit: 5000, badge: 'Reels', active: true, views: '5.1K' },
+      { id: 'linkedin', name: 'LinkedIn', handle: 'Creator Studio', limit: 3000, badge: 'Pro', active: true, views: '2.7K' }
     ];
 
+    let PLATFORMS = JSON.parse(localStorage.getItem('omnipost_platforms') || 'null') || DEFAULT_PLATFORMS;
     let selectedPreviewPlatform = 'threads';
     let aspectRatio = '9:16';
     let scheduleMode = 'now';
     let currentMedia = null;
+    let currentTab = 'create';
 
-    let postHistory = [
+    let postHistory = JSON.parse(localStorage.getItem('omnipost_history') || 'null') || [
       {
         id: 'POST-2026-089',
         caption: 'Setup studio minimalis modal hemat untuk konten harian yang konsisten!',
         time: 'Hari ini, 14:20 WIB',
         platforms: ['threads', 'instagram', 'tiktok', 'youtube', 'x', 'facebook', 'linkedin'],
         status: 'Terkirim (7/7)'
-      },
-      {
-        id: 'POST-2026-088',
-        caption: 'Kenapa algoritma Threads 2026 lebih suka diskusi tanya-jawab dibanding link eksternal?',
-        time: 'Kemarin, 19:00 WIB',
-        platforms: ['threads', 'x', 'linkedin'],
-        status: 'Terkirim (3/3)'
       }
     ];
+
+    function saveState() {
+      try {
+        localStorage.setItem('omnipost_platforms', JSON.stringify(PLATFORMS));
+        localStorage.setItem('omnipost_history', JSON.stringify(postHistory));
+      } catch (e) {}
+    }
 
     function showSnackbar(msg) {
       const sb = document.getElementById('snackbar');
       sb.textContent = msg;
       sb.classList.remove('hidden');
       clearTimeout(window._sbTimer);
-      window._sbTimer = setTimeout(() => sb.classList.add('hidden'), 2800);
+      window._sbTimer = setTimeout(() => sb.classList.add('hidden'), 2600);
     }
 
     function renderPlatformChips() {
       const container = document.getElementById('platformChips');
       container.innerHTML = PLATFORMS.map(p => `
         <button onclick="togglePlatform('${p.id}')"
-          class="flex items-center justify-between px-3 py-2.5 rounded-xl border text-left transition active:scale-95 ${
-            p.active
-              ? 'bg-surface-800 border-indigo-500/70 text-white shadow-sm'
-              : 'bg-surface-900/60 border-slate-800 text-slate-500'
-          }">
-          <div class="flex items-center gap-2 min-w-0">
-            <span class="w-2.5 h-2.5 rounded-full shrink-0 ${p.active ? 'bg-emerald-400' : 'bg-slate-600'}"></span>
-            <span class="text-xs font-semibold truncate">${p.name}</span>
+          style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-radius:12px;border:1px solid ${p.active ? '#6366F1' : '#1E2536'};background:${p.active ? '#1A1F2C' : '#0F1117'};color:${p.active ? '#fff' : '#64748B'};cursor:pointer;text-align:left;">
+          <div style="display:flex;align-items:center;gap:7px;overflow:hidden;">
+            <span style="width:8px;height:8px;border-radius:99px;background:${p.active ? '#10B981' : '#475569'};flex-shrink:0;"></span>
+            <span style="font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</span>
           </div>
-          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${p.active ? p.color : 'bg-slate-800 text-slate-500'}">${p.badge}</span>
+          <span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;background:${p.active ? 'rgba(99,102,241,0.22)' : '#141821'};color:${p.active ? '#C7D2FE' : '#64748B'};">${p.badge}</span>
         </button>
       `).join('');
 
@@ -444,6 +407,7 @@ Dari Reels, TikTok, Shorts, sampai diskusi hangat di Threads — semua sinkron t
       const target = PLATFORMS.find(p => p.id === id);
       if (target) {
         target.active = !target.active;
+        saveState();
         renderPlatformChips();
         renderAccountConnections();
       }
@@ -452,18 +416,17 @@ Dari Reels, TikTok, Shorts, sampai diskusi hangat di Threads — semua sinkron t
     function toggleAllPlatforms() {
       const allActive = PLATFORMS.every(p => p.active);
       PLATFORMS.forEach(p => p.active = !allActive);
+      saveState();
       renderPlatformChips();
       renderAccountConnections();
     }
 
     function setAspectRatio(ratio) {
       aspectRatio = ratio;
-      document.getElementById('btn-ratio-916').className = ratio === '9:16'
-        ? 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-indigo-600 text-white'
-        : 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-surface-800 text-slate-400';
-      document.getElementById('btn-ratio-45').className = ratio === '4:5'
-        ? 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-indigo-600 text-white'
-        : 'px-2.5 py-1 rounded-lg text-[11px] font-medium bg-surface-800 text-slate-400';
+      document.getElementById('btn-ratio-916').style.background = ratio === '9:16' ? '#4F46E5' : '#1A1F2C';
+      document.getElementById('btn-ratio-916').style.color = ratio === '9:16' ? '#fff' : '#94A3B8';
+      document.getElementById('btn-ratio-45').style.background = ratio === '4:5' ? '#4F46E5' : '#1A1F2C';
+      document.getElementById('btn-ratio-45').style.color = ratio === '4:5' ? '#fff' : '#94A3B8';
       syncAllPreviews();
     }
 
@@ -472,15 +435,16 @@ Dari Reels, TikTok, Shorts, sampai diskusi hangat di Threads — semua sinkron t
       if (!file) return;
       const url = URL.createObjectURL(file);
       const isVideo = file.type.startsWith('video/');
-      currentMedia = { type: isVideo ? 'video' : 'image', url, name: file.name };
+      currentMedia = { type: isVideo ? 'video' : 'image', url, name: file.name, file };
       displayMediaPreview();
-      showSnackbar(`Media "${file.name}" dimuat`);
+      showSnackbar(`Media "${file.name}" siap`);
     }
 
     function useSampleMedia(type) {
       currentMedia = {
         type,
         url: null,
+        file: null,
         name: type === 'video' ? 'reel_creator_workflow_2026.mp4' : 'studio_setup_2026.jpg'
       };
       displayMediaPreview();
@@ -494,15 +458,15 @@ Dari Reels, TikTok, Shorts, sampai diskusi hangat di Threads — semua sinkron t
 
       const area = document.getElementById('mediaRenderArea');
       if (currentMedia.url && currentMedia.type === 'image') {
-        area.innerHTML = `<img src="${currentMedia.url}" class="max-h-60 w-auto object-contain rounded-lg" />`;
+        area.innerHTML = `<img src="${currentMedia.url}" style="max-height:210px;width:auto;object-fit:contain;border-radius:10px;" />`;
       } else if (currentMedia.url && currentMedia.type === 'video') {
-        area.innerHTML = `<video src="${currentMedia.url}" controls class="max-h-60 w-auto rounded-lg"></video>`;
+        area.innerHTML = `<video src="${currentMedia.url}" controls style="max-height:210px;width:auto;border-radius:10px;"></video>`;
       } else {
         area.innerHTML = `
-          <div class="w-full h-44 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex flex-col items-center justify-center text-white p-4">
-            <span class="text-xs font-bold uppercase tracking-widest bg-black/30 px-2.5 py-1 rounded-full mb-2">${currentMedia.type === 'video' ? '▶ VIDEO 1080x1920' : '🖼 FOTO HD'}</span>
-            <p class="text-sm font-semibold">${currentMedia.name}</p>
-            <p class="text-[11px] text-white/80 mt-1">Rasio ${aspectRatio} • Siap Multi-Upload</p>
+          <div style="width:100%;height:150px;background:linear-gradient(135deg,#4F46E5,#9333EA,#DB2777);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;padding:12px;">
+            <span style="font-size:11px;font-weight:700;background:rgba(0,0,0,0.35);padding:4px 10px;border-radius:99px;margin-bottom:6px;">${currentMedia.type === 'video' ? '▶ VIDEO 1080x1920' : '🖼 FOTO HD'}</span>
+            <div style="font-size:13px;font-weight:600;">${currentMedia.name}</div>
+            <div style="font-size:11px;opacity:0.85;margin-top:2px;">Rasio ${aspectRatio}</div>
           </div>`;
       }
       syncAllPreviews();
@@ -518,23 +482,63 @@ Dari Reels, TikTok, Shorts, sampai diskusi hangat di Threads — semua sinkron t
 
     function polishCaptionAI() {
       const box = document.getElementById('masterCaption');
-      box.value = `🔥 Stop buang waktu upload satu per satu!
-
-Dengan 1 kali klik di OmniPost Studio, kontenmu langsung tayang serentak di Threads, Instagram Reels, TikTok, YouTube Shorts, X, Facebook, dan LinkedIn — lengkap dengan format caption yang otomatis menyesuaikan karakter tiap platform.
-
-Menurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! 👇`;
+      box.value = "🔥 Stop buang waktu upload satu per satu!\n\nDengan 1 kali klik di OmniPost Studio, kontenmu langsung tayang serentak di Threads, Instagram Reels, TikTok, YouTube Shorts, X, Facebook, dan LinkedIn — lengkap dengan format caption yang otomatis menyesuaikan karakter tiap platform.\n\nMenurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! 👇";
       syncAllPreviews();
-      showSnackbar('✨ Caption berhasil dioptimalkan untuk engagement');
+      showSnackbar('✨ Caption berhasil dioptimalkan');
     }
 
     function appendHashtags() {
       const box = document.getElementById('masterCaption');
       if (!box.value.includes('#ContentCreator')) {
-        box.value = box.value.trim() + '
-
-#ContentCreator #ThreadsIndonesia #SocialMediaTips #OmniPost';
+        box.value = box.value.trim() + "\n\n#ContentCreator #ThreadsIndonesia #SocialMediaTips #OmniPost";
         syncAllPreviews();
-        showSnackbar('Hashtag relevan ditambahkan');
+        showSnackbar('Hashtag ditambahkan');
+      }
+    }
+
+    function getFormattedPlatformText(platformId) {
+      const p = PLATFORMS.find(item => item.id === platformId) || PLATFORMS[0];
+      const rawText = document.getElementById('masterCaption').value.trim();
+      if (platformId === 'threads') {
+        const topic = document.getElementById('threadsTopic').value.trim();
+        return topic ? `${rawText}\n\n#${topic.replace(/^#/, '')}` : rawText;
+      }
+      return rawText.length > p.limit ? rawText.slice(0, p.limit - 3) + '...' : rawText;
+    }
+
+    async function copyPlatformCaption(platformId) {
+      const text = getFormattedPlatformText(platformId);
+      try {
+        await navigator.clipboard.writeText(text);
+        showSnackbar('📋 Caption disalin ke clipboard');
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showSnackbar('📋 Caption disalin');
+      }
+    }
+
+    async function shareNativeAndroid(platformId) {
+      const text = getFormattedPlatformText(platformId);
+      await copyPlatformCaption(platformId);
+      if (navigator.share) {
+        try {
+          const shareData = { title: 'OmniPost Studio', text };
+          if (currentMedia && currentMedia.file && navigator.canShare && navigator.canShare({ files: [currentMedia.file] })) {
+            shareData.files = [currentMedia.file];
+          }
+          await navigator.share(shareData);
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            showSnackbar('Caption tersalin! Tempel di aplikasi tujuan.');
+          }
+        }
+      } else {
+        showSnackbar('Caption tersalin! Buka aplikasi tujuan & tempel.');
       }
     }
 
@@ -557,39 +561,38 @@ Menurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! �
       const replyMode = document.getElementById('threadsReplyControl').value;
 
       const mediaBlock = currentMedia
-        ? `<div class="my-2.5 rounded-xl overflow-hidden border border-slate-800 bg-gradient-to-br from-indigo-900/60 to-pink-900/50 p-4 text-center">
-             <span class="text-[11px] font-semibold text-white bg-black/40 px-2.5 py-1 rounded-full">${currentMedia.type === 'video' ? '🎬 Video' : '🖼️ Gambar'} (${aspectRatio})</span>
-             <p class="text-[11px] text-slate-300 mt-1.5 truncate">${currentMedia.name}</p>
+        ? `<div style="margin:10px 0;border-radius:12px;border:1px solid #1E2536;background:linear-gradient(135deg,rgba(79,70,229,0.35),rgba(219,39,119,0.3));padding:14px;text-align:center;">
+             <span style="font-size:11px;font-weight:700;color:#fff;background:rgba(0,0,0,0.45);padding:3px 10px;border-radius:99px;">${currentMedia.type === 'video' ? '🎬 Video' : '🖼️ Gambar'} (${aspectRatio})</span>
+             <div style="font-size:11px;color:#CBD5E1;margin-top:6px;">${currentMedia.name}</div>
            </div>`
         : '';
 
       if (platformId === 'threads') {
         const parts = splitThreadsText(rawText, autoSplit);
-        const replyLabel = replyMode === 'everyone' ? 'Siapa saja dapat membalas' : replyMode === 'accounts_you_follow' ? 'Profil yang diikuti dapat membalas' : 'Hanya yang disebut';
+        const replyLabel = replyMode === 'everyone' ? 'Siapa saja dapat membalas' : replyMode === 'accounts_you_follow' ? 'Profil yang diikuti' : 'Hanya yang disebut';
         return `
-          <div class="space-y-3 font-sans">
+          <div style="display:flex;flex-direction:column;gap:12px;">
             ${parts.map((part, idx) => `
-              <div class="flex gap-3">
-                <div class="flex flex-col items-center">
-                  <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-neutral-700 to-neutral-500 flex items-center justify-center text-xs font-bold text-white">CS</div>
-                  ${idx < parts.length - 1 ? '<div class="w-0.5 flex-1 bg-slate-700 my-1"></div>' : ''}
+              <div style="display:flex;gap:10px;">
+                <div style="display:flex;flex-direction:column;align-items:center;">
+                  <div style="width:32px;height:32px;border-radius:99px;background:#334155;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;">CS</div>
+                  ${idx < parts.length - 1 ? '<div style="width:2px;flex:1;background:#334155;margin:4px 0;"></div>' : ''}
                 </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="text-xs font-bold text-white">creator.studio</span>
-                    <span class="text-sky-400 text-xs">✔</span>
-                    ${topic && idx === 0 ? `<span class="text-[11px] text-slate-400 bg-slate-800/90 px-2 py-0.5 rounded-full">${topic}</span>` : ''}
-                    <span class="text-[11px] text-slate-500 ml-auto">Baru saja</span>
+                <div style="flex:1;min-width:0;">
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                    <strong style="font-size:12px;color:#fff;">creator.studio</strong>
+                    <span style="color:#38BDF8;font-size:11px;">✔</span>
+                    ${topic && idx === 0 ? `<span style="font-size:10px;color:#94A3B8;background:#1E293B;padding:2px 8px;border-radius:99px;">${topic}</span>` : ''}
                   </div>
-                  <p class="text-xs text-slate-200 whitespace-pre-line mt-1 leading-relaxed">${part}</p>
+                  <p style="margin:6px 0 0;font-size:12px;color:#E2E8F0;white-space:pre-line;line-height:1.5;">${part}</p>
                   ${idx === 0 ? mediaBlock : ''}
-                  <div class="flex items-center gap-4 mt-2.5 text-slate-400 text-xs">
+                  <div style="display:flex;gap:14px;margin-top:8px;font-size:12px;color:#94A3B8;">
                     <span>♡</span><span>💬</span><span>🔁</span><span>✈️</span>
                   </div>
                 </div>
               </div>
             `).join('')}
-            <div class="pt-2 border-t border-slate-800/80 flex justify-between text-[11px] text-slate-500">
+            <div style="border-top:1px solid #1E2536;padding-top:8px;display:flex;justify-content:space-between;font-size:11px;color:#64748B;">
               <span>${replyLabel}</span>
               <span>${rawText.length}/500 kar</span>
             </div>
@@ -599,53 +602,39 @@ Menurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! �
 
       const trimmed = rawText.length > p.limit ? rawText.slice(0, p.limit - 3) + '...' : rawText;
       return `
-        <div class="space-y-2.5">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full ${p.color} flex items-center justify-center text-xs font-bold">${p.name[0]}</div>
-              <div>
-                <p class="text-xs font-bold text-white">${p.name}</p>
-                <p class="text-[11px] text-slate-400">${p.handle}</p>
-              </div>
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#fff;">${p.name}</div>
+              <div style="font-size:11px;color:#94A3B8;">${p.handle}</div>
             </div>
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300">${trimmed.length}/${p.limit}</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:99px;background:#1E293B;color:#CBD5E1;">${trimmed.length}/${p.limit}</span>
           </div>
           ${mediaBlock}
-          <p class="text-xs text-slate-200 whitespace-pre-line leading-relaxed">${trimmed}</p>
+          <p style="margin:0;font-size:12px;color:#E2E8F0;white-space:pre-line;line-height:1.5;">${trimmed}</p>
         </div>
       `;
-    }
-
-    function renderPreviewTabs(containerId) {
-      const el = document.getElementById(containerId);
-      if (!el) return;
-      el.innerHTML = PLATFORMS.map(p => `
-        <button onclick="selectPreviewPlatform('${p.id}')"
-          class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
-            selectedPreviewPlatform === p.id
-              ? 'bg-indigo-600 text-white'
-              : 'bg-surface-800 text-slate-400 hover:text-slate-200'
-          }">
-          ${p.name}
-        </button>
-      `).join('');
-    }
-
-    function selectPreviewPlatform(id) {
-      selectedPreviewPlatform = id;
-      syncAllPreviews();
     }
 
     function syncAllPreviews() {
       const text = document.getElementById('masterCaption').value;
       document.getElementById('charCounter').textContent = text.length;
-      renderPreviewTabs('desktopPreviewTabs');
-      renderPreviewTabs('mobilePreviewTabs');
-      const html = buildPreviewHTML(selectedPreviewPlatform);
-      const desktopBox = document.getElementById('desktopPreviewContainer');
-      const mobileBox = document.getElementById('mobilePreviewContainer');
-      if (desktopBox) desktopBox.innerHTML = html;
-      if (mobileBox) mobileBox.innerHTML = html;
+      const tabs = document.getElementById('mobilePreviewTabs');
+      if (tabs) {
+        tabs.innerHTML = PLATFORMS.map(p => `
+          <button onclick="selectPreviewPlatform('${p.id}')"
+            style="padding:6px 12px;border-radius:10px;border:none;font-size:11px;font-weight:700;white-space:nowrap;cursor:pointer;background:${selectedPreviewPlatform === p.id ? '#4F46E5' : '#1A1F2C'};color:${selectedPreviewPlatform === p.id ? '#fff' : '#94A3B8'};">
+            ${p.name}
+          </button>
+        `).join('');
+      }
+      const box = document.getElementById('mobilePreviewContainer');
+      if (box) box.innerHTML = buildPreviewHTML(selectedPreviewPlatform);
+    }
+
+    function selectPreviewPlatform(id) {
+      selectedPreviewPlatform = id;
+      syncAllPreviews();
     }
 
     function openPreviewSheet() {
@@ -659,12 +648,10 @@ Menurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! �
 
     function setScheduleMode(mode) {
       scheduleMode = mode;
-      document.getElementById('sched-now').className = mode === 'now'
-        ? 'px-3 py-1 rounded-lg text-xs font-medium bg-indigo-600 text-white'
-        : 'px-3 py-1 rounded-lg text-xs font-medium text-slate-400';
-      document.getElementById('sched-later').className = mode === 'later'
-        ? 'px-3 py-1 rounded-lg text-xs font-medium bg-indigo-600 text-white'
-        : 'px-3 py-1 rounded-lg text-xs font-medium text-slate-400';
+      document.getElementById('sched-now').style.background = mode === 'now' ? '#4F46E5' : 'transparent';
+      document.getElementById('sched-now').style.color = mode === 'now' ? '#fff' : '#94A3B8';
+      document.getElementById('sched-later').style.background = mode === 'later' ? '#4F46E5' : 'transparent';
+      document.getElementById('sched-later').style.color = mode === 'later' ? '#fff' : '#94A3B8';
       document.getElementById('schedulePicker').classList.toggle('hidden', mode === 'now');
       renderPlatformChips();
     }
@@ -688,9 +675,9 @@ Menurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! �
       pct.textContent = '0%';
 
       list.innerHTML = activeTargets.map(p => `
-        <div id="step-${p.id}" class="flex items-center justify-between bg-surface-850 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs">
-          <span class="font-medium text-slate-200">${p.name}</span>
-          <span class="status-text text-slate-400">Menunggu antrean...</span>
+        <div id="step-${p.id}" style="display:flex;align-items:center;justify-content:space-between;background:#141821;border:1px solid #1E2536;border-radius:12px;padding:10px 12px;font-size:12px;">
+          <span style="font-weight:600;color:#E2E8F0;">${p.name}</span>
+          <span class="status-text" style="color:#94A3B8;">Menyiapkan...</span>
         </div>
       `).join('');
 
@@ -698,27 +685,28 @@ Menurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! �
         setTimeout(() => {
           const row = document.getElementById(`step-${p.id}`);
           if (row) {
-            row.querySelector('.status-text').innerHTML = '<span class="text-emerald-400 font-semibold">✔ Terkirim</span>';
+            row.querySelector('.status-text').innerHTML = `<button onclick="shareNativeAndroid('${p.id}')" style="background:rgba(16,185,129,0.16);border:1px solid rgba(16,185,129,0.35);color:#34D399;font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;cursor:pointer;">✔ Siap / Kirim</button>`;
           }
           const progress = Math.round(((index + 1) / activeTargets.length) * 100);
           bar.style.width = `${progress}%`;
           pct.textContent = `${progress}%`;
 
           if (index === activeTargets.length - 1) {
-            document.getElementById('publishModalTitle').textContent = 'Publikasi Serentak Selesai!';
-            document.getElementById('publishModalSubtitle').textContent = `${activeTargets.length} platform berhasil disinkronkan`;
+            document.getElementById('publishModalTitle').textContent = 'Konten Siap di Semua Kanal!';
+            document.getElementById('publishModalSubtitle').textContent = 'Ketuk tombol pada tiap platform untuk langsung share ke aplikasi';
             closeBtn.classList.remove('hidden');
 
             postHistory.unshift({
-              id: 'POST-2026-' + Math.floor(100 + Math.random() * 900),
-              caption: document.getElementById('masterCaption').value.slice(0, 95) + '...',
-              time: scheduleMode === 'now' ? 'Baru saja' : `Terjadwal (${document.getElementById('schedDate').value || 'Besok'} ${document.getElementById('schedTime').value})`,
+              id: 'POST-' + Math.floor(1000 + Math.random() * 9000),
+              caption: document.getElementById('masterCaption').value.slice(0, 100) + '...',
+              time: scheduleMode === 'now' ? 'Baru saja' : `Jadwal: ${document.getElementById('schedDate').value || 'Besok'} ${document.getElementById('schedTime').value}`,
               platforms: activeTargets.map(t => t.id),
               status: scheduleMode === 'now' ? `Terkirim (${activeTargets.length}/${activeTargets.length})` : 'Terjadwal'
             });
+            saveState();
             renderHistory();
           }
-        }, (index + 1) * 420);
+        }, (index + 1) * 350);
       });
     }
 
@@ -728,17 +716,17 @@ Menurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! �
     }
 
     function renderHistory() {
-      document.getElementById('totalPostsBadge').textContent = `${postHistory.length} Postingan`;
+      document.getElementById('totalPostsBadge').textContent = `${postHistory.length} Post`;
       document.getElementById('historyList').innerHTML = postHistory.map(item => `
-        <div class="bg-surface-850 border border-slate-800 rounded-2xl p-4 space-y-2.5">
-          <div class="flex items-center justify-between text-xs">
-            <span class="font-mono text-slate-400">${item.id}</span>
-            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-semibold">${item.status}</span>
+        <div class="card" style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px;">
+            <span style="font-family:monospace;color:#94A3B8;">${item.id}</span>
+            <span style="padding:2px 8px;border-radius:99px;background:rgba(16,185,129,0.15);color:#34D399;font-weight:700;">${item.status}</span>
           </div>
-          <p class="text-sm text-slate-200 leading-relaxed">${item.caption}</p>
-          <div class="flex items-center justify-between pt-1 text-[11px] text-slate-400">
+          <p style="margin:0;font-size:13px;color:#E2E8F0;line-height:1.45;">${item.caption}</p>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:#64748B;">
             <span>${item.time}</span>
-            <span>${item.platforms.length} Kanal Aktif</span>
+            <span>${item.platforms.length} Kanal</span>
           </div>
         </div>
       `).join('');
@@ -746,17 +734,17 @@ Menurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! �
 
     function renderAnalytics() {
       document.getElementById('platformStatsBreakdown').innerHTML = `
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Distribusi Tayangan per Platform</h3>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#94A3B8;">Distribusi Tayangan per Platform</div>
         ${PLATFORMS.map((p, i) => {
-          const width = Math.max(22, 92 - i * 11);
+          const width = Math.max(25, 92 - i * 11);
           return `
-            <div class="space-y-1">
-              <div class="flex justify-between text-xs">
-                <span class="font-medium text-slate-200">${p.name}</span>
-                <span class="text-slate-400">${p.views} views</span>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span style="font-weight:600;color:#E2E8F0;">${p.name}</span>
+                <span style="color:#94A3B8;">${p.views} views</span>
               </div>
-              <div class="w-full h-2 bg-surface-900 rounded-full overflow-hidden">
-                <div class="h-full bg-indigo-500 rounded-full" style="width: ${width}%"></div>
+              <div style="width:100%;height:7px;background:#0F1117;border-radius:99px;overflow:hidden;">
+                <div style="height:100%;width:${width}%;background:#6366F1;border-radius:99px;"></div>
               </div>
             </div>
           `;
@@ -766,39 +754,53 @@ Menurutmu fitur mana yang paling membantu kreator harian? Tulis di komentar! �
 
     function renderAccountConnections() {
       document.getElementById('accountConnectionsList').innerHTML = PLATFORMS.map(p => `
-        <div class="py-3 flex items-center justify-between">
+        <div style="padding:12px 0;border-bottom:1px solid #1E2536;display:flex;align-items:center;justify-content:space-between;gap:8px;">
           <div>
-            <p class="text-sm font-semibold text-white">${p.name}</p>
-            <p class="text-xs text-slate-400">${p.handle} • Token API Aktif</p>
+            <div style="font-size:13px;font-weight:700;color:#fff;">${p.name}</div>
+            <div style="font-size:11px;color:#94A3B8;">${p.handle}</div>
           </div>
-          <button onclick="togglePlatform('${p.id}')"
-            class="px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
-              p.active ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' : 'bg-surface-800 text-slate-400'
-            }">
-            ${p.active ? 'Terhubung' : 'Nonaktif'}
-          </button>
+          <div style="display:flex;gap:6px;">
+            <button onclick="shareNativeAndroid('${p.id}')" style="padding:6px 10px;border-radius:10px;background:#1A1F2C;border:1px solid #2D364A;color:#CBD5E1;font-size:11px;font-weight:600;cursor:pointer;">
+              Share
+            </button>
+            <button onclick="togglePlatform('${p.id}')"
+              style="padding:6px 10px;border-radius:10px;border:1px solid ${p.active ? 'rgba(16,185,129,0.35)' : '#2D364A'};background:${p.active ? 'rgba(16,185,129,0.15)' : '#1A1F2C'};color:${p.active ? '#34D399' : '#94A3B8'};font-size:11px;font-weight:700;cursor:pointer;">
+              ${p.active ? 'Aktif' : 'Nonaktif'}
+            </button>
+          </div>
         </div>
       `).join('');
     }
 
     function switchTab(tab) {
+      currentTab = tab;
       ['create', 'history', 'analytics', 'accounts'].forEach(t => {
         document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
         const btn = document.getElementById(`nav-${t}`);
         const pill = btn.querySelector('.nav-pill');
-        if (t === tab) {
-          btn.classList.remove('text-slate-400');
-          btn.classList.add('text-indigo-400');
-          pill.classList.add('bg-indigo-500/20');
-        } else {
-          btn.classList.add('text-slate-400');
-          btn.classList.remove('text-indigo-400');
-          pill.classList.remove('bg-indigo-500/20');
-        }
+        btn.style.color = t === tab ? '#818CF8' : '#94A3B8';
+        pill.style.background = t === tab ? 'rgba(99,102,241,0.2)' : 'transparent';
       });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Init
+    // Tangani tombol Back Android
+    document.addEventListener('backbutton', function (e) {
+      const previewOpen = !document.getElementById('previewSheetModal').classList.contains('hidden');
+      const publishOpen = !document.getElementById('publishModal').classList.contains('hidden');
+      if (previewOpen) {
+        e.preventDefault();
+        closePreviewSheet();
+      } else if (publishOpen) {
+        e.preventDefault();
+        closePublishModal();
+      } else if (currentTab !== 'create') {
+        e.preventDefault();
+        switchTab('create');
+      }
+    }, false);
+
+    // Inisialisasi
     document.getElementById('schedDate').valueAsDate = new Date();
     renderPlatformChips();
     syncAllPreviews();
